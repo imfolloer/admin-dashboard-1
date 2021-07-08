@@ -7,18 +7,22 @@ const pool = require("./db");
 app.use(cors());
 app.use(express.json()); //req.body
 
-//ROUTES//
+//ROUTES// 
 
+app.get("/",  (req, res) => {
+  res.send({ message: "Welcome to my application." });
+})
 //create a todo
 
 app.post("/todos", async (req, res) => {
   try {
+    console.log(req.body);
     const { description } = req.body;
     const newTodo = await pool.query(
       "INSERT INTO todo (description) VALUES($1) RETURNING *",
       [description]
     );
-
+// console.log(res.json(newTodo.rows[0]));
     res.json(newTodo.rows[0]);
   } catch (err) {
     console.error(err.message);
@@ -29,7 +33,9 @@ app.post("/todos", async (req, res) => {
 
 app.get("/todos", async (req, res) => {
   try {
+res.send("Loading...");
     const allTodos = await pool.query("SELECT * FROM todo");
+   // console.table(allTodos.rows)
     res.json(allTodos.rows);
   } catch (err) {
     console.error(err.message);
